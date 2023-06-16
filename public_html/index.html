@@ -1,11 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Contactos</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css" />
+
+    <style>
+        header {
+            display: flex;
+            justify-content: center;
+            background-color: #303030;
+            align-items: center;
+            height: 100px;
+            color: white;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        footer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #303030;
+            height: 50px;
+            color: white;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        p {
+            text-align: center;
+        }
+    </style>
 </head>
+
 <body>
-    
+    <header>
+        <h1>ADMINISTRADOR DE CONTACTOS</h1>
+    </header>
+
+    <div class="ui modal">
+        <i class="close icon"></i>
+        <div class="header">Agregar nuevo contacto</div>
+        <div class="image content">
+            <div class="ui medium image">
+                <img src="/img/user-icon.jpg" />
+            </div>
+            <div class="description">
+                <form id="form-contacto" method="post" action="/guardar-contacto" class="ui form">
+                    <h4 class="ui dividing header">Informacion del contacto</h4>
+                    <div class="field">
+                        <label>Nombre</label>
+                        <div class="two fields">
+                            <div class="field">
+                                <input type="text" name="primer-nombre" placeholder="Primer nombre" required />
+                            </div>
+                            <div class="field">
+                                <input type="text" name="segundo-nombre" placeholder="Segundo nombre" />
+                            </div>
+                        </div>
+                        <div class="two fields">
+                            <div class="field">
+                                <input type="text" name="primer-apellido" placeholder="Primer apellido" required />
+                            </div>
+                            <div class="field">
+                                <input type="text" name="segundo-apellido" placeholder="Segundo apellido" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fiel">
+                        <label>Direccion</label>
+                        <div class="field">
+                            <input type="text" name="direccion" placeholder="Direccion" />
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>Celular</label>
+                            <input type="text" name="celular" placeholder="Celular" />
+                        </div>
+                        <div class="field">
+                            <label>Correo</label>
+                            <input type="text" name="correo" placeholder="Correo" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button">Cancelar</div>
+            <div id="btnSubmitContacto" class="ui positive right labeled icon button">
+                Agregar
+                <i class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui container segment">
+        <div class="btn-container">
+            <button id="btnAgregar" class="positive ui button">
+                <i class="plus icon"></i> Agregar Contacto
+            </button>
+        </div>
+
+        <table class="ui celled padded table" id="tabla-contactos" class="display" style="width: 100%"></table>
+    </div>
+
+    <div class="ui small basic test modal transition">
+        <div class="ui icon header">
+            <i class="archive icon"></i>
+            Eliminar Contacto
+        </div>
+        <div class="content">
+            <p>Seguro que quiere eliminar este contacto?</p>
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                No
+            </div>
+            <div class="ui green ok inverted button">
+                <i class="checkmark icon"></i>
+                Si
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2023. Todos los derechos reservados. Equipo #3, Ingenieria y
+        desarrollo en la web.
+    </footer>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" />
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#tabla-contactos").DataTable({
+                ajax: {
+                    url: "/api/contactos",
+                    dataSrc: "",
+                },
+                columns: [
+                    { title: "No.", data: "row" },
+                    { title: "Nombre", data: "nombre" },
+                    { title: "Celular", data: "celular" },
+                    { title: "Correo", data: "correo" },
+                    { title: "Direccion", data: "direccion" },
+                    {
+                        title: "Opciones",
+                        data: null,
+                        render: function (data, type, row) {
+                            return `<button class="ui primary button" data-id="${data.id}">Editar</button>
+                <button onClick="eliminarContacto(${data.id});" class="negative ui button" data-id="${data.id}">Eliminar</button>`;
+                        },
+                    },
+                ],
+                columnDefs: [
+                    {
+                        targets: -1, // Última columna (columna de opciones)
+                        className: "dt-body-center", // Clase para centrar el contenido
+                    },
+                ],
+            });
+
+            $("#btnAgregar").click(function (e) {
+                e.preventDefault();
+                $(".ui.modal").modal("show");
+            });
+
+            $("#btnSubmitContacto").click(function () {
+                $("#form-contacto").submit();
+            });
+        });
+
+        function eliminarContacto(id) {
+            /* */
+            $(".ui.basic.test.modal")
+                .modal({
+                    closable: false,
+                    onDeny: function () {
+                    
+                        return false;
+                    },
+                    onApprove: function () {
+                        $.ajax({
+                            url: `/eliminar-contacto/${id}`,
+                            type: "POST",
+                            success: function (result) {
+                                location.reload();
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(error);
+                            },
+                        });
+                    },
+                })
+                .modal("show");
+        }
+    </script>
 </body>
+
 </html>

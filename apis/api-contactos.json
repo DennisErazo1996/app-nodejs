@@ -1,0 +1,16 @@
+[
+    {
+        "id":"1",
+        "firstName":"Dennis",
+        "LastName":"Erazo",
+        "cellphone":"+50499961320",
+        "email":"dennis.erazo96@gmail.com"
+    },
+    {
+        "id":"2",
+        "firstName":"Angel",
+        "LastName":"Erazo",
+        "cellphone":"+50499961320",
+        "email":"angel.erazo96@gmail.com"
+    }
+]
