@@ -7,7 +7,7 @@ const connection = require("../conection-data-base");
 
 router.get("/api/contactos", function (req, res) {
   connection.query(
-    'SELECT id, ROW_NUMBER() OVER(ORDER BY primer_nombre ASC) AS row, concat(primer_nombre, " ", segundo_nombre, " ", primer_apellido, " ", segundo_apellido) as nombre, celular, correo, direccion FROM contactos where deleted_at = 0',
+    'SELECT id, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, ROW_NUMBER() OVER(ORDER BY primer_nombre ASC) AS row, concat(primer_nombre, " ", segundo_nombre, " ", primer_apellido, " ", segundo_apellido) as nombre, celular, correo, direccion FROM contactos where deleted_at = 0',
     (error, results) => {
       if (error) {
         console.error("Error al ejecutar la consulta:", error);
@@ -19,6 +19,8 @@ router.get("/api/contactos", function (req, res) {
   );
 });
 
+
+
 router.post("/guardar-contacto", (req, res) => {
   const primerNombre = req.body["primer-nombre"];
   const segundoNombre = req.body["segundo-nombre"];
@@ -27,11 +29,7 @@ router.post("/guardar-contacto", (req, res) => {
   const correo = req.body["correo"];
   const direccion = req.body["direccion"];
   const celular = req.body["celular"];
-  // Obtén los demás valores del formulario de la misma manera
-
-  // Realiza las operaciones necesarias para guardar los datos en la base de datos utilizando la conexión establecida anteriormente
-
-  // Ejemplo de inserción en la base de datos utilizando mysql
+  
   connection.query(
     "INSERT INTO contactos (primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, celular, correo, direccion) VALUES (?, ?, ?, ?, ?, ?, ?)",
     [
@@ -55,6 +53,9 @@ router.post("/guardar-contacto", (req, res) => {
   res.redirect("back");
 });
 
+
+
+
 router.post("/eliminar-contacto/:id", (req, res) => {
   const contactoId = req.params.id;
 
@@ -73,6 +74,45 @@ router.post("/eliminar-contacto/:id", (req, res) => {
   );
 
   res.redirect("back");
+});
+
+
+
+
+router.post("/editar-contacto", (req, res) => {
+  const id = req.body['edit-id'];
+  const primerNombre = req.body['edit-primer-nombre'];
+  const segundoNombre = req.body['edit-segundo-nombre'];
+  const primerApellido = req.body['edit-primer-apellido'];
+  const segundoApellido = req.body['edit-segundo-apellido'];
+  const correo = req.body['edit-correo'];
+  const celular = req.body['edit-celular'];
+  const direccion = req.body['edit-direccion'];
+
+  connection.query(
+    "UPDATE contactos set primer_nombre = ?, segundo_nombre = ?, primer_apellido = ?, segundo_apellido = ?, correo = ?, celular = ?, direccion = ? where id = ?",
+    [
+      primerNombre,
+      segundoNombre,
+      primerApellido,
+      segundoApellido,
+      correo,
+      celular,
+      direccion,
+      id
+
+    ],
+    (error, results) => {
+      if (error) {
+        console.error("Error al editar los datos en la base de datos:", error);
+        return;
+      }
+      console.log("Datos actualizados correctamente en la base de datos");
+    }
+  );
+
+  res.redirect("back");
+
 });
 
 module.exports = router;

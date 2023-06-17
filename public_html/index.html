@@ -46,7 +46,7 @@
         <h1>ADMINISTRADOR DE CONTACTOS</h1>
     </header>
 
-    <div class="ui modal">
+    <div class="ui modal" id="modal-agregar">
         <i class="close icon"></i>
         <div class="header">Agregar nuevo contacto</div>
         <div class="image content">
@@ -133,9 +133,68 @@
         </div>
     </div>
 
+
+    <!-- Modal para editar -->
+    <div class="ui modal editar" id="modal-editar">
+        <i class="close icon"></i>
+        <div class="header">Editar contacto</div>
+        <div class="image content">
+            <div class="ui medium image">
+                <img src="/img/user-icon.jpg" />
+            </div>
+            <div class="description">
+                <form id="form-editar-contacto" method="post" action="/editar-contacto" class="ui form">
+                    <h4 class="ui dividing header">Informacion del contacto</h4>
+                    <input name="edit-id" type="text" type="hidden" style="display: none;">
+                    <div class="field">
+                        <label>Nombre</label>
+                        <div class="two fields">
+                            <div class="field">
+                                <input type="text" name="edit-primer-nombre" placeholder="Primer nombre" required />
+                            </div>
+                            <div class="field">
+                                <input type="text" name="edit-segundo-nombre" placeholder="Segundo nombre" />
+                            </div>
+                        </div>
+                        <div class="two fields">
+                            <div class="field">
+                                <input type="text" name="edit-primer-apellido" placeholder="Primer apellido" required />
+                            </div>
+                            <div class="field">
+                                <input type="text" name="edit-segundo-apellido" placeholder="Segundo apellido" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fiel">
+                        <label>Direccion</label>
+                        <div class="field">
+                            <input type="text" name="edit-direccion" placeholder="Direccion" />
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>Celular</label>
+                            <input type="text" name="edit-celular" placeholder="Celular" />
+                        </div>
+                        <div class="field">
+                            <label>Correo</label>
+                            <input type="text" name="edit-correo" placeholder="Correo" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="actions">
+            <div class="ui black deny button">Cancelar</div>
+            <div id="btnEditarContacto" class="ui positive right labeled icon button">
+                Editar
+                <i class="checkmark icon"></i>
+            </div>
+        </div>
+    </div>
+
     <footer>
-        &copy; 2023. Todos los derechos reservados. Equipo #3, Ingenieria y
-        desarrollo en la web.
+        &copy; 2023. Todos los derechos reservados. Equipo #3, Ingenieria y desarrollo en la web.
     </footer>
 
     <!-- jQuery -->
@@ -164,36 +223,64 @@
                         title: "Opciones",
                         data: null,
                         render: function (data, type, row) {
-                            return `<button class="ui primary button" data-id="${data.id}">Editar</button>
-                <button onClick="eliminarContacto(${data.id});" class="negative ui button" data-id="${data.id}">Eliminar</button>`;
+                            return `<button class="ui primary button btnEditar" data-id="${data.id}" data-primer-nombre="${data.primer_nombre}" data-segundo-nombre="${data.segundo_nombre}" data-primer-apellido="${data.primer_apellido}" data-segundo-apellido="${data.segundo_apellido}" data-apellido="${data.primer_apellido}" data-direccion="${data.direccion}" data-celular="${data.celular}" data-correo="${data.correo}">Editar</button>
+                                <button class="negative ui button btnEliminar" onClick="eliminarContacto(${data.id});" data-id="${data.id}">Eliminar</button>`;
                         },
                     },
                 ],
                 columnDefs: [
                     {
-                        targets: -1, // Última columna (columna de opciones)
-                        className: "dt-body-center", // Clase para centrar el contenido
+                        targets: -1, 
+                        className: "dt-body-center", 
                     },
                 ],
             });
 
             $("#btnAgregar").click(function (e) {
                 e.preventDefault();
-                $(".ui.modal").modal("show");
+                $("#modal-agregar").modal("show");
             });
 
             $("#btnSubmitContacto").click(function () {
                 $("#form-contacto").submit();
             });
+
+            $("#tabla-contactos").on("click", ".btnEditar", function () {
+                var id = $(this).data("id");
+                var primerNombre = $(this).data("primer-nombre");
+                var segundoNombre = $(this).data("segundo-nombre");
+                var primerApellido = $(this).data("primer-apellido");
+                var segundoApellido = $(this).data("segundo-apellido");
+                var direccion = $(this).data("direccion");
+                var celular = $(this).data("celular");
+                var correo = $(this).data("correo");
+
+                $('input[name="edit-id"]').val(id);
+                $('input[name="edit-primer-nombre"]').val(primerNombre);
+                $('input[name="edit-segundo-nombre"]').val(segundoNombre);
+                $('input[name="edit-primer-apellido"]').val(primerApellido);
+                $('input[name="edit-segundo-apellido"]').val(segundoApellido);
+                $('input[name="edit-direccion"]').val(direccion);
+                $('input[name="edit-celular"]').val(celular);
+                $('input[name="edit-correo"]').val(correo);
+
+                $(".editar").modal("show");
+            });
+
+            $("#btnEditarContacto").click(function () {
+
+                $('#form-editar-contacto').submit();
+                
+            });
+
         });
 
         function eliminarContacto(id) {
-            /* */
             $(".ui.basic.test.modal")
                 .modal({
                     closable: false,
                     onDeny: function () {
-                    
+                        $(".ui.basic.test.modal").modal('hide')
                         return false;
                     },
                     onApprove: function () {
@@ -210,7 +297,9 @@
                     },
                 })
                 .modal("show");
-        }
+        };
+
+        
     </script>
 </body>
 
